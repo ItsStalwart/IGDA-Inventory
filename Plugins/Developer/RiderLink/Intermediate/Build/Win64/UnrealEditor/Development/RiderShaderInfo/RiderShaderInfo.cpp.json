@@ -1,11 +1,11 @@
 {
     "Version": "1.1",
     "Data": {
-        "Source": "e:\\unreal projects\\igda202209\\plugins\\developer\\riderlink\\source\\ridershaderinfo\\ridershaderinfo.cpp",
+        "Source": "e:\\unreal projects\\igda202209\\igda-inventory\\plugins\\developer\\riderlink\\source\\ridershaderinfo\\ridershaderinfo.cpp",
         "ProvidedModule": "",
         "Includes": [
-            "e:\\unreal projects\\igda202209\\plugins\\developer\\riderlink\\intermediate\\build\\win64\\unrealeditor\\development\\ridershaderinfo\\definitions.h",
-            "e:\\unreal projects\\igda202209\\plugins\\developer\\riderlink\\source\\ridershaderinfo\\ridershaderinfo.h",
+            "e:\\unreal projects\\igda202209\\igda-inventory\\plugins\\developer\\riderlink\\intermediate\\build\\win64\\unrealeditor\\development\\ridershaderinfo\\definitions.h",
+            "e:\\unreal projects\\igda202209\\igda-inventory\\plugins\\developer\\riderlink\\source\\ridershaderinfo\\ridershaderinfo.h",
             "e:\\ue_5.0\\engine\\source\\runtime\\core\\public\\modules\\moduleinterface.h",
             "e:\\ue_5.0\\engine\\source\\runtime\\core\\public\\coretypes.h",
             "e:\\ue_5.0\\engine\\source\\runtime\\core\\public\\hal\\platform.h",
