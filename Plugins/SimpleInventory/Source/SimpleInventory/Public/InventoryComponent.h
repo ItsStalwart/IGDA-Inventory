@@ -8,7 +8,7 @@
 #include "InventoryComponent.generated.h"
 
 
-DECLARE_EVENT(UInventoryComponent, FInventoryContentChanged)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FInventoryContentChanged,TArray<int>,NewContent,TArray<int>,NewCount);
 DECLARE_EVENT_ThreeParams(UInventoryComponent,FItemAddFailed, int, int, FString)
 
 
@@ -46,7 +46,7 @@ public:
 
 private:
 	int InventoryCapacity{0}; //we will use capacity 0 as infinite
-
+	UPROPERTY(BlueprintAssignable)
 	FInventoryContentChanged InventoryContentChangedEvent;
 	FItemAddFailed ItemAddFailedEvent;
 public:
@@ -54,10 +54,17 @@ public:
 	{
 		this->InventoryCapacity = InInventoryCapacity;
 	}
-
-	[[nodiscard]] int GetInventoryCapacity() const
+	UFUNCTION(BlueprintCallable)
+	int GetInventoryCapacity() const
 	{
 		return InventoryCapacity;
+	}
+
+	UFUNCTION(BlueprintCallable)
+	void GetContents(TArray<int>&Contents,TArray<int>&Counts) const
+	{
+		Contents = InventoryContents;
+		Counts = ContentQuantities;
 	}
 
 private:

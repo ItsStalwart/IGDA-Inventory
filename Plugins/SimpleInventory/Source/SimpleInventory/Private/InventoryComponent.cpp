@@ -36,7 +36,7 @@ void UInventoryComponent::LoadInventoryContents(const TArray<int> InInventoryCon
 {
 	this->InventoryContents = InInventoryContents;
 	this->ContentQuantities = InInventoryQuantities;
-	InventoryContentChangedEvent.Broadcast();
+	InventoryContentChangedEvent.Broadcast(InventoryContents,ContentQuantities);
 }
 
 void UInventoryComponent::EmptyInventory(TArray<int>& OutInventoryContents, TArray<int>& OutInventoryQuantities)
@@ -45,7 +45,7 @@ void UInventoryComponent::EmptyInventory(TArray<int>& OutInventoryContents, TArr
 	OutInventoryQuantities = this->ContentQuantities;
 	this->InventoryContents.Empty(this->InventoryCapacity);
 	this->ContentQuantities.Empty(this->InventoryCapacity);
-	InventoryContentChangedEvent.Broadcast();
+	InventoryContentChangedEvent.Broadcast(InventoryContents,ContentQuantities);
 }
 
 void UInventoryComponent::AddItem(const int ItemId, const int Quantity)
@@ -56,27 +56,27 @@ void UInventoryComponent::AddItem(const int ItemId, const int Quantity)
 		return;
 	}
 	const int FoundPosition = InventoryContents.Find(ItemId);
-	if (FoundPosition)
+	if (FoundPosition>=0)
 	{
 		ContentQuantities[FoundPosition] += Quantity;
-		InventoryContentChangedEvent.Broadcast();
+		InventoryContentChangedEvent.Broadcast(InventoryContents,ContentQuantities);
 		return;
 	}
 	const int NewPosition = InventoryContents.Emplace(ItemId);
 	ContentQuantities.EmplaceAt(NewPosition,Quantity);
-	InventoryContentChangedEvent.Broadcast();
+	InventoryContentChangedEvent.Broadcast(InventoryContents,ContentQuantities);
 }
 
 void UInventoryComponent::RemoveItem(const int ItemId, const int Quantity)
 {
 	const int FoundPosition = InventoryContents.Find(ItemId);
-	if (FoundPosition)
+	if (FoundPosition>=0)
 	{
 		if (ContentQuantities[FoundPosition] >= Quantity)
 		{
 			ContentQuantities[FoundPosition] -= Quantity;
 			CleanEmptySlots();
-			InventoryContentChangedEvent.Broadcast();
+			InventoryContentChangedEvent.Broadcast(InventoryContents,ContentQuantities);
 			return;
 		}
 		UE_LOG(LogTemp,Warning, TEXT("Attempted to remove unavailable item quantities"))
@@ -101,14 +101,14 @@ void UInventoryComponent::MoveItem(const int OriginalSlot, const int TargetSlot)
 	{
 		InventoryContents.Swap(OriginalSlot,TargetSlot);
 		ContentQuantities.Swap(OriginalSlot,TargetSlot);
-		InventoryContentChangedEvent.Broadcast();
+		InventoryContentChangedEvent.Broadcast(InventoryContents,ContentQuantities);
 		return;
 	}
 	InventoryContents.EmplaceAt(TargetSlot,InventoryContents[OriginalSlot]);
 	ContentQuantities.EmplaceAt(TargetSlot,ContentQuantities[OriginalSlot]);
 	InventoryContents.RemoveAt(OriginalSlot);
 	ContentQuantities.RemoveAt(OriginalSlot);
-	InventoryContentChangedEvent.Broadcast();
+	InventoryContentChangedEvent.Broadcast(InventoryContents,ContentQuantities);
 }
 
 bool UInventoryComponent::IsInventoryFull() const

@@ -25,7 +25,9 @@ public class SimpleInventory : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
+				"Core", 
+				"UMGEditor", 
+				"UMG",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

@@ -16,10 +16,10 @@ public:
 	FItemData();
 	~FItemData();
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	int ItemId {0};
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftObjectPtr<UTexture2D> ItemThumbnail{ nullptr };
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UClass* ItemActorClass {nullptr};
 };

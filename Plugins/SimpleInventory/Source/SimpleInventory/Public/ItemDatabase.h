@@ -10,7 +10,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class SIMPLEINVENTORY_API UItemDatabase final : public UDataAsset
 {
 	GENERATED_BODY()

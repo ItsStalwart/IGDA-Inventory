@@ -26,7 +26,6 @@ UDropTableComponent::~UDropTableComponent()
 		return;
 	}
 	ItemDroppedEvent.Clear();
-	GetOwner()->OnDestroyed.RemoveDynamic(this,&UDropTableComponent::DropItems);
 }
 
 void UDropTableComponent::DropItems(AActor* Owner)
