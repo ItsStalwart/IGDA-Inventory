@@ -3,27 +3,21 @@
 
 #include "DropManagementSubsystem.h"
 
+#include "DroppedItemActor.h"
+#include "SimpleInventory.h"
 
-UDropManagementSubsystem::UDropManagementSubsystem()
-{
-	const FSoftObjectPath MyAssetPath(TEXT("/SimpleInventory/Items/MainDatabase.MainDatabase"));
-	UObject* MyAsset= MyAssetPath.TryLoad();
-	MainDatabase = Cast<UItemDatabase>(MyAsset);
-}
 
-void UDropManagementSubsystem::SpawnDrop(int ItemId, int ItemQuantity, FTransform SpawnLocation)
+void UDropManagementSubsystem::SpawnDrop( int ItemId,  int ItemQuantity,  FTransform SpawnLocation) 
 {
-	FItemData ItemToSpawn;
-	if(MainDatabase==nullptr)
-	{
-		UE_LOG(LogTemp,Warning,TEXT("Failed to load item database"))
-		return;
-	}
-	if(!MainDatabase->GetItemDataById(ItemId, ItemToSpawn))
+	UItemData* SpawnedItemData = FSimpleInventoryModule::GetDefaultDatabase()->GetItemDataById(ItemId);
+	if(!IsValid(SpawnedItemData))
 	{
 		UE_LOG(LogTemp,Warning,TEXT("Attempt to spawn invalid item, check requested Id"))
 		return;
 	}
 	
-	GetWorld()->SpawnActor<AActor>(ItemToSpawn.ItemActorClass,SpawnLocation,FActorSpawnParameters());
+	ADroppedItemActor* NewItem = GetWorld()->SpawnActorDeferred<ADroppedItemActor>(ADroppedItemActor::StaticClass(),SpawnLocation,nullptr,nullptr,ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
+	NewItem->SetActorData(SpawnedItemData);
+	NewItem->SetStackSize(ItemQuantity);
+	NewItem->FinishSpawning(SpawnLocation);
 }

@@ -3,9 +3,11 @@
 
 #include "InventoryComponent.h"
 
+#include "DropManagementSubsystem.h"
+#include "DroppedItemActor.h"
 #include "IDetailTreeNode.h"
 #include "Serialization/PropertyLocalizationDataGathering.h"
-
+DEFINE_LOG_CATEGORY(LogInventoryComponent);
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
@@ -22,6 +24,8 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	DropManager = GetWorld()->GetGameInstance()->GetSubsystem<UDropManagementSubsystem>();
+	GetOwner()->OnActorBeginOverlap.AddUniqueDynamic(this, &UInventoryComponent::PickUpItem);
 	// ...
 	
 }
@@ -50,9 +54,15 @@ void UInventoryComponent::EmptyInventory(TArray<int>& OutInventoryContents, TArr
 
 void UInventoryComponent::AddItem(const int ItemId, const int Quantity)
 {
+	if(Quantity==0)
+	{
+		UE_LOG(LogTemp,Warning, TEXT("Call to add 0 items"))
+		return;
+	}
 	if(this->IsInventoryFull())
 	{
-		ItemAddFailedEvent.Broadcast(ItemId,Quantity,TEXT("Inventory is full!"));
+		ItemAddFailedEvent.Broadcast(ItemId,Quantity,TEXT("Inventory is full!"), GetOwner()->GetTransform());
+		DropManager->SpawnDrop(ItemId,Quantity, GetOwner()->GetTransform());
 		return;
 	}
 	const int FoundPosition = InventoryContents.Find(ItemId);
@@ -69,6 +79,11 @@ void UInventoryComponent::AddItem(const int ItemId, const int Quantity)
 
 void UInventoryComponent::RemoveItem(const int ItemId, const int Quantity)
 {
+	if(Quantity==0)
+	{
+		UE_LOG(LogInventoryComponent,Warning, TEXT("Call to remove 0 items"))
+		return;
+	}
 	const int FoundPosition = InventoryContents.Find(ItemId);
 	if (FoundPosition>=0)
 	{
@@ -79,22 +94,22 @@ void UInventoryComponent::RemoveItem(const int ItemId, const int Quantity)
 			InventoryContentChangedEvent.Broadcast(InventoryContents,ContentQuantities);
 			return;
 		}
-		UE_LOG(LogTemp,Warning, TEXT("Attempted to remove unavailable item quantities"))
+		UE_LOG(LogInventoryComponent,Warning, TEXT("Attempted to remove unavailable item quantities"))
 		return;
 	}
-	UE_LOG(LogTemp,Warning, TEXT("Attempted to remove inexistant item"));
+	UE_LOG(LogInventoryComponent,Warning, TEXT("Attempted to remove inexistant item"));
 }
 
 void UInventoryComponent::MoveItem(const int OriginalSlot, const int TargetSlot)
 {
 	if(!(InventoryContents.IsValidIndex(OriginalSlot)))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Attempted to move item from nonexistant slot"));
+		UE_LOG(LogInventoryComponent, Warning, TEXT("Attempted to move item from nonexistant slot"));
 		return;
 	}
 	if(InventoryCapacity != 0 && TargetSlot >= InventoryCapacity)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Attempted to move item to nonexistant slot"));
+		UE_LOG(LogInventoryComponent, Warning, TEXT("Attempted to move item to nonexistant slot"));
 		return;
 	}
 	if (InventoryContents.IsValidIndex(TargetSlot))
@@ -130,5 +145,16 @@ void UInventoryComponent::CleanEmptySlots()
 			ContentQuantities.Remove(Element);
 		}
 	}
+}
+
+void UInventoryComponent::PickUpItem(AActor* Owner, AActor* ItemToPickUp)
+{
+	const ADroppedItemActor* Drop = Cast<ADroppedItemActor>(ItemToPickUp);
+	if(Drop == nullptr)
+	{
+		return;
+	}
+	AddItem(Drop->GetAssociatedId(),Drop->GetStackSize());
+	ItemToPickUp->Destroy();
 }
 

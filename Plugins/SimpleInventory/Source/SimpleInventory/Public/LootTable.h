@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "DA_LootTable.generated.h"
+#include "LootTable.generated.h"
 
 
 USTRUCT(BlueprintType)
@@ -20,7 +20,7 @@ struct FLootTableElement
  * 
  */
 UCLASS()
-class SIMPLEINVENTORY_API UDA_LootTable final : public UDataAsset
+class SIMPLEINVENTORY_API ULootTable final : public UDataAsset
 {
 	GENERATED_BODY()
 

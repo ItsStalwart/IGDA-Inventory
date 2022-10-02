@@ -4,22 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "DropTableComponent.h"
 #include "ItemDatabase.h"
 #include "DropManagementSubsystem.generated.h"
 
 class UDropTableComponent;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FItemDropped,int, DropId, int, DropQuantity,FTransform,DropLocation);
 /**
  * 
  */
 UCLASS()
-class SIMPLEINVENTORY_API UDropManagementSubsystem : public UGameInstanceSubsystem
+class SIMPLEINVENTORY_API UDropManagementSubsystem final : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
-	UDropManagementSubsystem();
-	UPROPERTY(EditAnywhere)
-	UItemDatabase* MainDatabase {nullptr};
+
+	FItemDropped OnItemDroppedEvent;
 public:
 	UFUNCTION()
 	void SpawnDrop(int ItemId, int ItemQuantity, FTransform SpawnLocation);
+
+	UFUNCTION()
+	FItemDropped& GetOnItemDroppedEvent() {return OnItemDroppedEvent;};
 };

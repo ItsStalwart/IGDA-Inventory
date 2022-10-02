@@ -3,13 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DropManagementSubsystem.h"
 #include "Components/ActorComponent.h"
 #include "Containers/Map.h"
 #include "InventoryComponent.generated.h"
 
-
+DECLARE_LOG_CATEGORY_EXTERN(LogInventoryComponent, Log, All)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FInventoryContentChanged,TArray<int>,NewContent,TArray<int>,NewCount);
-DECLARE_EVENT_ThreeParams(UInventoryComponent,FItemAddFailed, int, int, FString)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FItemAddFailed, int, FailedId, int, FailedCount, FString, FailureReason, FTransform, FailedAt);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -27,7 +28,7 @@ protected:
 
 public:	
 	
-
+	
 	FInventoryContentChanged& OnInventoryContentChanged(){return InventoryContentChangedEvent;};
 	FItemAddFailed& OnItemAddFailed(){return ItemAddFailedEvent;};
 	
@@ -44,10 +45,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EmptyInventory(TArray<int> &OutInventoryContents,TArray<int> &OutInventoryQuantities);
 
+
 private:
+	UDropManagementSubsystem* DropManager {nullptr};
 	int InventoryCapacity{0}; //we will use capacity 0 as infinite
 	UPROPERTY(BlueprintAssignable)
 	FInventoryContentChanged InventoryContentChangedEvent;
+	UPROPERTY(BlueprintAssignable)
 	FItemAddFailed ItemAddFailedEvent;
 public:
 	void SetInventoryCapacity(const int InInventoryCapacity)
@@ -69,8 +73,10 @@ public:
 
 private:
 	TArray<int> InventoryContents;
-	TArray<int> ContentQuantities; //using two arrays instead of a map to facilitate splitting and moving stacks
+	TArray<int> ContentQuantities; //using two arrays instead of a map to allow multiple slots to hold the same item
 
 	bool IsInventoryFull() const;
 	void CleanEmptySlots();
+	UFUNCTION()
+	void PickUpItem(AActor* Owner, AActor* ItemToPickUp);
 };

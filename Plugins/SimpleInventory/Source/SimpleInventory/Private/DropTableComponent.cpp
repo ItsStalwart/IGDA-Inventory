@@ -2,8 +2,6 @@
 
 
 #include "DropTableComponent.h"
-
-#include "DropManagementSubsystem.h"
 #include "Math/UnrealMathUtility.h"
 #include "Windows/WindowsApplication.h"
 
@@ -17,15 +15,6 @@ UDropTableComponent::UDropTableComponent()
 	{
 		MaxNumberOfDrops = MinNumberOfDrops;
 	}
-}
-
-UDropTableComponent::~UDropTableComponent()
-{
-	if(GetOwner() == nullptr)
-	{
-		return;
-	}
-	ItemDroppedEvent.Clear();
 }
 
 void UDropTableComponent::DropItems(AActor* Owner)
@@ -46,7 +35,7 @@ void UDropTableComponent::DropItems(AActor* Owner)
 	}
 	for (int i=0;i<DroppedItems.Num();i++)
 	{
-		ItemDroppedEvent.Broadcast(DroppedItems[i],DroppedQuantities[i],Owner->GetActorTransform());
+		DropManager->SpawnDrop(DroppedItems[i],DroppedQuantities[i],Owner->GetActorTransform());
 	}
 }
 
@@ -58,8 +47,7 @@ void UDropTableComponent::BeginPlay()
 		return;
 	}
 	GetOwner()->OnDestroyed.AddDynamic(this, &UDropTableComponent::DropItems);
-	UDropManagementSubsystem* DropManager = GetWorld()->GetGameInstance()->GetSubsystem<UDropManagementSubsystem>();
-	ItemDroppedEvent.AddUniqueDynamic(DropManager, &UDropManagementSubsystem::SpawnDrop);
+	DropManager = GetWorld()->GetGameInstance()->GetSubsystem<UDropManagementSubsystem>();
 }
 
 int UDropTableComponent::GetRandomDrop() const

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ItemData.h"
+#include "Components/PropertyViewBase.h"
 #include "Engine/DataAsset.h"
 #include "ItemDatabase.generated.h"
 
@@ -16,13 +17,22 @@ class SIMPLEINVENTORY_API UItemDatabase final : public UDataAsset
 	GENERATED_BODY()
 private:
 	UPROPERTY(EditAnywhere)
-	TArray<FItemData> Database {};
+	TArray<UItemData*> Database {};
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void GetFullDatabase(TArray<FItemData> &FullData);
+	TArray<UItemData*> GetFullDatabase();
 
 	UFUNCTION(BlueprintCallable)
-	bool GetItemDataById(const int Id, FItemData& FoundData);
+	UItemData* GetItemDataById(const int Id);
+
+	UFUNCTION(BlueprintCallable)
+	void ClearDatabase();
+
+	UFUNCTION(BlueprintCallable)
+	void InsertItem(UItemData* InItem);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsDatabaseValid();
 	
 };

@@ -3,20 +3,50 @@
 
 #include "ItemDatabase.h"
 
-void UItemDatabase::GetFullDatabase(TArray<FItemData>& FullData)
+TArray<UItemData*> UItemDatabase::GetFullDatabase()
 {
-	FullData = this->Database;
+	return this->Database;
 }
 
-bool UItemDatabase::GetItemDataById(const int Id, FItemData& FoundData)
+UItemData* UItemDatabase::GetItemDataById(const int Id)
 {
+	if(Database.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Database is empty!))"));
+		return nullptr;
+	}
 	for (int i=0;i<Database.Num();i++)
 	{
-		if(Database[i].ItemId == Id)
+		if(Database[i]->ItemId == Id)
 		{
-			FoundData = Database[i];
-			return true;
+			return Database[i];
 		}
 	}
-	return false;
+	return nullptr;
+}
+
+void UItemDatabase::ClearDatabase()
+{
+	Database.Empty();
+}
+
+void UItemDatabase::InsertItem(UItemData* InItem)
+{
+	Database.Emplace(InItem);
+}
+
+bool UItemDatabase::IsDatabaseValid()
+{
+	for (int i=0;i<Database.Num()-1;i++)
+	{
+		for (int j=i+1;j<Database.Num();j++)
+		{
+			if(Database[i]->ItemId == Database[j]->ItemId)
+			{
+				UE_LOG(LogTemp,Warning,TEXT("Duplicate ItemIds in database! Entries %i and %i have the same ItemId!"),i,j);
+				return false;
+			}
+		}
+	}
+	return true;
 }

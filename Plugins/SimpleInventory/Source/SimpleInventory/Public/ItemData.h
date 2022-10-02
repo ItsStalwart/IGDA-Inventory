@@ -7,19 +7,29 @@
 /**
  * 
  */
-
-USTRUCT(BlueprintType)
-struct SIMPLEINVENTORY_API FItemData
+UENUM(BlueprintType)
+enum EItemRarity
 {
-	GENERATED_USTRUCT_BODY()
-public:
-	FItemData();
-	~FItemData();
+	Trash,
+	Common,
+	Uncommon,
+	Rare,
+	Mythic,
+	Legendary
+};
 
+UCLASS(BlueprintType)
+class SIMPLEINVENTORY_API UItemData : public UDataAsset
+{
+	GENERATED_BODY()
+public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	int ItemId {0};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSoftObjectPtr<UTexture2D> ItemThumbnail{ nullptr };
+	UTexture2D* ItemThumbnail{ nullptr };
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	UClass* ItemActorClass {nullptr};
+	TEnumAsByte<EItemRarity> ItemRarity;
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UStaticMesh* DroppedItemMesh{ nullptr };
+	
 };
