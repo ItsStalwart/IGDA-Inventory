@@ -39,14 +39,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveItem(const int ItemId,const int Quantity);
 	UFUNCTION(BlueprintCallable)
-	void MoveItem(const int OriginalSlot, const int TargetSlot);
+	void HandleMoveItem(const int OriginalSlot, const int TargetSlot);
 	UFUNCTION(BlueprintCallable)
 	void LoadInventoryContents(const TArray<int> InInventoryContents,const TArray<int> InInventoryQuantities);
 	UFUNCTION(BlueprintCallable)
 	void EmptyInventory(TArray<int> &OutInventoryContents,TArray<int> &OutInventoryQuantities);
-
+	UFUNCTION(BlueprintCallable)
+	void DropItemFromSlot(const int SlotIndex, const bool bShouldDrop = true);
+	UFUNCTION(BlueprintCallable)
+	void GetContentsFromSlot(const int SlotIndex, int& ContainedId, int& ContainedQuantity);
 
 private:
+	void MoveItem(const int OriginalSlot, const int TargetSlot);
+	void StackItem(const int OriginalSlot, const int TargetSlot);
 	UDropManagementSubsystem* DropManager {nullptr};
 	int InventoryCapacity{0}; //we will use capacity 0 as infinite
 	UPROPERTY(BlueprintAssignable)

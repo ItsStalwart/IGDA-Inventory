@@ -21,4 +21,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	int ContentCount;
+
+	UPROPERTY(BlueprintReadOnly)
+	int SlotIndex;
 };

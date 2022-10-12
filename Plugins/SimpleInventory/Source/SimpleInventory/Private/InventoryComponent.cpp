@@ -25,7 +25,7 @@ void UInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 
 	DropManager = GetWorld()->GetGameInstance()->GetSubsystem<UDropManagementSubsystem>();
-	GetOwner()->OnActorBeginOverlap.AddUniqueDynamic(this, &UInventoryComponent::PickUpItem);
+	//GetOwner()->OnActorBeginOverlap.AddUniqueDynamic(this, &UInventoryComponent::PickUpItem);
 	// ...
 	
 }
@@ -50,6 +50,28 @@ void UInventoryComponent::EmptyInventory(TArray<int>& OutInventoryContents, TArr
 	this->InventoryContents.Empty(this->InventoryCapacity);
 	this->ContentQuantities.Empty(this->InventoryCapacity);
 	InventoryContentChangedEvent.Broadcast(InventoryContents,ContentQuantities);
+}
+
+void UInventoryComponent::DropItemFromSlot(const int SlotIndex, const bool bShouldDrop)
+{
+	if (bShouldDrop)
+	{
+		DropManager->SpawnDrop(InventoryContents[SlotIndex],ContentQuantities[SlotIndex], GetOwner()->GetTransform());
+	}
+	if(!InventoryContents.IsValidIndex(SlotIndex))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Attempt to remove item from invalid slot"));
+		return;
+	}
+	InventoryContents.RemoveAt(SlotIndex);
+	ContentQuantities.RemoveAt(SlotIndex);
+	InventoryContentChangedEvent.Broadcast(InventoryContents,ContentQuantities);
+}
+
+void UInventoryComponent::GetContentsFromSlot(const int SlotIndex, int& ContainedId, int& ContainedQuantity)
+{
+	ContainedId = InventoryContents[SlotIndex];
+	ContainedQuantity = ContentQuantities[SlotIndex];
 }
 
 void UInventoryComponent::AddItem(const int ItemId, const int Quantity)
@@ -98,6 +120,24 @@ void UInventoryComponent::RemoveItem(const int ItemId, const int Quantity)
 		return;
 	}
 	UE_LOG(LogInventoryComponent,Warning, TEXT("Attempted to remove inexistant item"));
+}
+
+void UInventoryComponent::HandleMoveItem(const int OriginalSlot, const int TargetSlot)
+{
+	if(InventoryContents[OriginalSlot] == InventoryContents[TargetSlot])
+	{
+		StackItem(OriginalSlot,TargetSlot);
+		return;
+	}
+	MoveItem(OriginalSlot,TargetSlot);
+}
+
+void UInventoryComponent::StackItem(const int OriginalSlot, const int TargetSlot)
+{
+	InventoryContents.RemoveAt(OriginalSlot);
+	ContentQuantities[TargetSlot] += ContentQuantities[OriginalSlot];
+	ContentQuantities.RemoveAt(OriginalSlot);
+	InventoryContentChangedEvent.Broadcast(InventoryContents,ContentQuantities);
 }
 
 void UInventoryComponent::MoveItem(const int OriginalSlot, const int TargetSlot)

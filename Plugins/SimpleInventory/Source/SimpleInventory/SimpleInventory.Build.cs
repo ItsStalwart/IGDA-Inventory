@@ -28,6 +28,7 @@ public class SimpleInventory : ModuleRules
 				"Core", 
 				"UMGEditor", 
 				"UMG",
+				"InputCore",
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

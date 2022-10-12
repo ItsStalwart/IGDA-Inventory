@@ -7,12 +7,12 @@
 #include "SimpleInventory.h"
 
 
-void UDropManagementSubsystem::SpawnDrop( int ItemId,  int ItemQuantity,  FTransform SpawnLocation) 
+void UDropManagementSubsystem::SpawnDrop(const int ItemId, const int ItemQuantity, const FTransform SpawnLocation) const
 {
 	UItemData* SpawnedItemData = FSimpleInventoryModule::GetDefaultDatabase()->GetItemDataById(ItemId);
 	if(!IsValid(SpawnedItemData))
 	{
-		UE_LOG(LogTemp,Warning,TEXT("Attempt to spawn invalid item, check requested Id"))
+		UE_LOG(LogTemp,Warning,TEXT("Attempt to spawn invalid item, check requested Id: %i"),ItemId);
 		return;
 	}
 	

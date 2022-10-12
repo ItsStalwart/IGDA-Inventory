@@ -39,6 +39,7 @@ void ADroppedItemActor::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("Spawned item without data!"))
 		return;
 	}
+	OnActorDataChanged();
 }
 
 void ADroppedItemActor::OnActorDataChanged() const
