@@ -52,6 +52,11 @@ void UDropTableComponent::BeginPlay()
 
 int UDropTableComponent::GetRandomDrop() const
 {
+	if(!IsValid(LootTable))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Loot Table Defined!"));
+		return -1;
+	}
 	const float DropRoll = FMath::RandRange(.0f,100.f);
 	for (const auto [ElementId, ElementDropChance] : LootTable->GetItemDropChances())
 	{

@@ -5,8 +5,7 @@
 
 #include "DropManagementSubsystem.h"
 #include "DroppedItemActor.h"
-#include "IDetailTreeNode.h"
-#include "Serialization/PropertyLocalizationDataGathering.h"
+
 DEFINE_LOG_CATEGORY(LogInventoryComponent);
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()

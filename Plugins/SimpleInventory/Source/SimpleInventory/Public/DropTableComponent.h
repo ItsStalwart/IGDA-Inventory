@@ -27,6 +27,6 @@ private:
 	int MaxNumberOfDrops{1};
 	UPROPERTY(EditAnywhere)
 	int MinNumberOfDrops{1};
-
+	UFUNCTION(BlueprintCallable)
 	int GetRandomDrop() const;
 };

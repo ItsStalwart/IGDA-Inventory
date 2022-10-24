@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "DropManagementSubsystem.h"
 #include "Components/ActorComponent.h"
-#include "Containers/Map.h"
+
 #include "InventoryComponent.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogInventoryComponent, Log, All)

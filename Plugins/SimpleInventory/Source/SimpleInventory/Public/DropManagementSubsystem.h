@@ -19,7 +19,7 @@ class SIMPLEINVENTORY_API UDropManagementSubsystem final : public UGameInstanceS
 
 	FItemDropped OnItemDroppedEvent;
 public:
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void SpawnDrop(int ItemId, int ItemQuantity, FTransform SpawnLocation) const;
 
 	UFUNCTION()
